@@ -1,0 +1,12 @@
+# Site settings
+title: Rachel Brindle
+description: "Oh gods, jekyll"
+baseurl: ""
+url: "http://younata.com"
+twitter_username: younata
+github_username: younata
+
+# Build settings
+markdown: kramdown
+permalink: pretty
+highlighter: pygments
