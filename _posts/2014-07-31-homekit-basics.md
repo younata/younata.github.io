@@ -83,7 +83,7 @@ NS_CLASS_AVAILABLE_IOS(8_0)
 @end
 {% endhighlight %}
 
-This looks, to me, as if Apple was going to do something with HMAction, then decided to just do something with [HMCharacteristicWriteAction](https://developer.apple.com/library/prerelease/ios/documentation/HomeKit/Reference/HMCharacteristicWriteAction_Class/index.html), which seems to be actually useful (change the value of a characteristic to X whenever it's executed, the system supposedly figures out when it's valid whenever the characteristic value is !X, also if the characteristic is even writeable, though I would imagine it would error/return nil if you try to create one using an unwriteable characteristic).
+[HMCharacteristicWriteAction](https://developer.apple.com/library/prerelease/ios/documentation/HomeKit/Reference/HMCharacteristicWriteAction_Class/index.html), is the useful subclass: it'll change the value of a characteristic to X whenever it's executed, the system supposedly figures out when it's valid whenever the characteristic value is !X, also if the characteristic is even writeable, though I would imagine it would error/return nil if you try to create one using an unwriteable characteristic.
 
 Action Sets
 ---
