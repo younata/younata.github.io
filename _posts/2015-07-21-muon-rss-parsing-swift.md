@@ -11,14 +11,14 @@ Muon is written as an NSOperation subclass, which fit my usecase in rNews of par
 
 So, a sample usecase looks like:
 
-```swift
-let feedParser = Muon.FeedParser(string: feedAsString)
-feedParser.success {feed: Muon.Feed in print("Feed: \(feed)")}
-feedParser.error {error: NSError in print("Error: \(error)")}
-// to asynchronously parse:
-operationQueue.addOperation(feedParser)
-// to synchronously parse:
-feedParser.main()
+```
+let feedParser = Muon.FeedParser(string: feedAsString)  
+feedParser.success {feed: Muon.Feed in print("Feed: \(feed)")}  
+feedParser.error {error: NSError in print("Error: \(error)")}  
+// to asynchronously parse:  
+operationQueue.addOperation(feedParser)  
+// to synchronously parse:  
+feedParser.main()  
 ```
 
 Muon can be installed with Carthage (`github "younata/Muon"`) or Cocoapods (though it's not yet in the main trunk). I prefer Carthage to Cocoapods.
