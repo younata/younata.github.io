@@ -1,14 +1,17 @@
 # Site settings
 title: Rachel Brindle
-description: "Oh gods, jekyll"
+description: "OSX, iOS and Robotics developer"
 baseurl: ""
 url: "http://younata.com"
 twitter_username: younata
 github_username: younata
 
 # Build settings
-markdown: kramdown
+markdown: redcarpet
 permalink: pretty
 highlighter: pygments
+
+redcarpet:
+  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
 
 exclude: [vendor]
