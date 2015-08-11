@@ -1,11 +1,11 @@
 ---
 layout: post
-title: OSX Programming - Programmatic scrolling tableviews
+title: OS X Programming - Programmatic scrolling tableviews
 date: 2015-08-08
 tags: swift, cocoa, appkit, osx, NSTableView, NSScrollView
 ---
 
-This is the first in a series (I hope) on OSX/AppKit programming for iOS devs. AppKit does not do as much for us out-of-the-box as UIKit does, to the point where, it seems to me, Interface Builder exists to hide a lot of AppKit's cruft. As someone who dislikes nibs/generated code on principle, I've been looking into how to use it programmatically.
+This is the first in a series on OS X/AppKit programming for iOS devs. AppKit does not do as much for us out-of-the-box as UIKit does, to the point where, it seems to me, Interface Builder exists to hide a lot of AppKit's cruft. As someone who dislikes nibs/generated code on principle, I've been looking into how to use it programmatically.
 
 These examples all use swift, though the objective-c version of the code isn't all that different.
 
@@ -80,22 +80,22 @@ Note that I'm using the excellent [PureLayout](https://github.com/smileyborg/pur
 import PureLayout_Mac
 
 class TableController: NSObject {
-	private var data = Array<String>()
+    private var data = Array<String>()
 
-	func configureView(view: NSView, data: [String]) {
-		self.data = data
-		let tableView = NSTableView()
-		tableView.addTableColumn(NSTableColumn(identifier: "column"))
-		tableView.setDelegate(self)
-		tableView.setDataSource(self)
-		
-		let scrollView = NSScrollView(forAutoLayout: ())
-		scrollView.hasVerticalScroller = true
+    func configureView(view: NSView, data: [String]) {
+        self.data = data
+        let tableView = NSTableView()
+        tableView.addTableColumn(NSTableColumn(identifier: "column"))
+        tableView.setDelegate(self)
+        tableView.setDataSource(self)
+
+        let scrollView = NSScrollView(forAutoLayout: ())
+        scrollView.hasVerticalScroller = true
         scrollView.documentView = self.tableView
-        
+
         view.addSubview(scrollView)
         scrollView.autoPinEdgesToSuperviewEdges(NSEdgeInsetZero)
-	}
+    }
 }
 
 extension TableController: NSTableViewDataSource {
@@ -127,3 +127,6 @@ extension TableController: NSTableViewDelegate {
 - [NSScrollView](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSScrollView_Class/index.html#//apple_ref/occ/cl/NSScrollView)
 
 - [PureLayout](https://github.com/smileyborg/purelayout) (AutoLayout helper - works in OSX and iOS)
+
+####Other posts in this series
+1. [Programmatic Menu Buttons](/2015/08/14/osx-programming-programmatic-menu-buttons/)
