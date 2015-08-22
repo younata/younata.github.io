@@ -130,3 +130,4 @@ extension TableController: NSTableViewDelegate {
 
 ####Other posts in this series
 1. [Programmatic Menu Buttons](/2015/08/14/osx-programming-programmatic-menu-buttons/)
+2. [Intro to Core Animation on OSX](/2015/08/21/osx-programming-core-animation/)
