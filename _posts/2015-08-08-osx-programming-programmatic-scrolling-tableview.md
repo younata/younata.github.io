@@ -129,5 +129,5 @@ extension TableController: NSTableViewDelegate {
 - [PureLayout](https://github.com/smileyborg/purelayout) (AutoLayout helper - works in OSX and iOS)
 
 ####Other posts in this series
-1. [Programmatic Menu Buttons](/2015/08/14/osx-programming-programmatic-menu-buttons/)
-2. [Intro to Core Animation on OSX](/2015/08/21/osx-programming-core-animation/)
+1. [Programmatic Menu Buttons]({% post_url 2015-08-14-osx-programming-programmatic-menu-buttons %})
+2. [Intro to Core Animation on OSX]({% post_url 2015-08-21-osx-programming-set-up-core-animation %})

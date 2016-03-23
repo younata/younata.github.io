@@ -147,4 +147,4 @@ Sometimes, you want to conditionally disable a Menuitem. For example, if you hav
 
 ####Other posts in this series
 1. [Programmatically creating a scrolling TableView](/2015/08/08/osx-programming-programmatic-scrolling-tableview/)
-2. [Intro to Core Animation on OSX](/2015/08/21/osx-programming-core-animation/)
+2. [Intro to Core Animation on OSX](/2015/08/21/osx-programming-set-up-core-animation/)
