@@ -7,11 +7,17 @@ twitter_username: younata
 github_username: younata
 
 # Build settings
-markdown: redcarpet
+markdown: kramdown
 permalink: pretty
-highlighter: pygments
+highlighter: rouge
 
-redcarpet:
-  extensions: ["no_intra_emphasis", "fenced_code_blocks", "autolink", "tables", "with_toc_data"]
+kramdown:
+  input: GFM
+  hard_wrap: false
 
 exclude: [vendor]
+
+collections:
+  projects:
+    output: true
+    permalink: /projects/:path/
