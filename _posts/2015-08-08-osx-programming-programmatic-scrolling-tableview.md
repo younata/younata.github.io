@@ -42,7 +42,7 @@ func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableCo
 }
 ```
 
-###Scrolling
+### Scrolling
 
 Now we have something! Just add it to an NSView and... it doesn't scroll. That's annoying.  
 NSTableView, unlike UITableView, does not inherit from a ScrollView. You do not get scrolling behavior out of the box. Instead, what we must do, is place our tableView inside an [NSScrollView](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSScrollView_Class/index.html#//apple_ref/occ/cl/NSScrollView), which is simple enough. Be sure to not call `-addSubview:` to add the tableView to the scrollView.
@@ -72,7 +72,7 @@ func tableView(tableView: NSTableView, viewForTableColumn tableColumn: NSTableCo
 
 Finally, if you're using autolayout (which you should), be sure to not enable autolayout for the tableView (though, please, use it for the scrollView).
 
-###Recap
+### Recap
 
 Note that I'm using the excellent [PureLayout](https://github.com/smileyborg/purelayout) library to help with autolayout.
 
@@ -118,7 +118,7 @@ extension TableController: NSTableViewDelegate {
 
 ```
 
-####Reference:
+#### Reference:
 
 - [NSTableView](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSTableView_Class/index.html)
 - [NSTableColumn](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSTableColumn_Class/index.html#//apple_ref/occ/cl/NSTableColumn)
@@ -128,6 +128,6 @@ extension TableController: NSTableViewDelegate {
 
 - [PureLayout](https://github.com/smileyborg/purelayout) (AutoLayout helper - works in OSX and iOS)
 
-####Other posts in this series
+#### Other posts in this series
 1. [Programmatic Menu Buttons]({% post_url 2015-08-14-osx-programming-programmatic-menu-buttons %})
 2. [Intro to Core Animation on OSX]({% post_url 2015-08-21-osx-programming-set-up-core-animation %})

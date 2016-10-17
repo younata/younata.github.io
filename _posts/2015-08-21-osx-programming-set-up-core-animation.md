@@ -11,7 +11,7 @@ Other than that, CoreAnimation on OSX is the same as CoreAnimation on iOS. You d
 
 Note that actually using Core Animation will be a future, more generic, article, this is just how to set it up with AppKit.
 
-####Layer-Backed
+#### Layer-Backed
 
 A layer-backed view means that the view delegates all the drawing to a `CALayer` that it manages. Setting one view to be layer-backed automatically sets all of it's subviews (and onwards) to be layer-backed. Additionally, if you want to directly do stuff to the layer, you need to set the [`wantsUpdateLayer`](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSView_Class/index.html#//apple_ref/occ/instp/NSView/wantsUpdateLayer) property to `true`. `UIViews` behave like this by default.
 
@@ -29,7 +29,7 @@ assert(view.layer != nil, "this should always pass")
 view.layer?.cornerRadius = 5
 ```
 
-####Layer-Hosting
+#### Layer-Hosting
 
 The difference between a layer-backed view and a layer-hosting view is that the system manages the layer in a layer-backed view, whereas you must manage the layer for a layer-hosting view.
 
@@ -50,7 +50,7 @@ layer.cornerRadius = 5
 ```
 
 
-####Reference
+#### Reference
 - [NSView](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSView_Class/index.html#//apple_ref/occ/cl/NSView)
     - [wantsUpdateLayer](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSView_Class/index.html#//apple_ref/occ/instp/NSView/wantsUpdateLayer) (property)
     - [wantsLayer](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/ApplicationKit/Classes/NSView_Class/index.html#//apple_ref/occ/instp/NSView/wantsLayer)  (property)
@@ -58,6 +58,6 @@ layer.cornerRadius = 5
 - [UIView](https://developer.apple.com/library/ios/documentation/UIKit/Reference/UIView_Class/index.html#//apple_ref/occ/cl/UIView)
 - [CALayer](https://developer.apple.com/library/mac/documentation/GraphicsImaging/Reference/CALayer_class/index.html)
 
-####Other posts in this series
+#### Other posts in this series
 1. [Programmatic Menu Buttons](/2015/08/14/osx-programming-programmatic-menu-buttons/)
 2. [Programmatically creating a scrolling TableView](/2015/08/08/osx-programming-programmatic-scrolling-tableview/)
