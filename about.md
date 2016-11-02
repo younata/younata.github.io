@@ -4,6 +4,6 @@ title: About
 permalink: /about/
 ---
 
-I'm Rachel, an OSX, iOS, and Robotics developer. I build little utilities for iOS that scratch my itches, and I build robots or other hardware projects whenever those itches need to get scratch.
+I'm Rachel. In my day job, I work as a consultant for Pivotal Labs. In my free time, I build iOS utilities, and electric vehicles.
 
 I have a list of current projects [here](/projects/)
