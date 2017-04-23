@@ -140,6 +140,13 @@ a:visited { color: #205caa; }
   background-color: #fff;
 }
 
+.page-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  width: auto
+}
+
 
 /* Home styles */
 /* ----------------------------------------------------------*/
@@ -179,6 +186,13 @@ a:visited { color: #205caa; }
   font-size: 15px;
   color: #818181;
   margin-top: 5px;
+}
+
+.posts .img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  width: auto
 }
 
 .post-content { margin: 0 0 30px; }
