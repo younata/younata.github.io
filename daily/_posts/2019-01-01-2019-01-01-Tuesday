@@ -1,0 +1,33 @@
+---
+layout: post
+title: 2019-01-01 Tuesday
+date: 2019-01-01
+tags: microblog log
+---
+
+Happy New Year.
+
+This is a thing I do at work - have an internal log that I update every day with what I did and how I did it. I like that, and decided to put a part of my blog as that, but still separate from the single-subject articles.
+
+Home:
+
+- Made Nicole a paper-towel based coffee filter, because we’re out of legitimate coffee filters.
+- Played Pandemic with Nicole. 🥰
+	- We won, because we played on easy.
+	- We also didn’t read the rules correctly, and thought we had to not only cure the diseases, but also eradicate them. So, we eradicated 3 of them, and ran out of player cards when there was only 1 cube left of the fourth disease. We were really sad until we reread the rules and saw that we only had to cure all the diseases, not eradicate them.
+- Made Pasta for dinner.
+    - Angel Hair pasta
+    - Tomato sauce (store-bought 😟)
+    - Sausage (😱)
+
+
+Short-Term Goals:
+
+- ✅ Be able to log in to my inoreader client from my [rss reader](https://github.com/younata/tethys).
+	- This is just logging in, not doing anything with the returned credentials - not even saving them.
+- ✅ Go through and update my financial records.
+	- I use [ledger](https://ledger-cli.org), so this was copying the transactions from my bank accounts/credit cards and putting them in my ledger.txt file.
+	- I use [ledger-autosync](https://gitlab.com/egh/ledger-autosync) to copy transactions, so this work was entirely naming the accounts that each transaction used.
+	- As expected for a millenial, the vast majority of my expenses go towards rent.
+- Update blog so that this can actually be separate from the main articles
+    - Kinda, laid the groundwork for this.
