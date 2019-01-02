@@ -5,5 +5,3 @@ permalink: /about/
 ---
 
 I'm Rachel. In my day job, I work as a software engineer in the aerospace industry. In my free time, I build iOS apps, and electric vehicles.
-
-I have a list of current projects [here](/projects/)

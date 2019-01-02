@@ -18,6 +18,6 @@ kramdown:
 exclude: [vendor]
 
 collections:
-  projects:
+  daily:
     output: true
     permalink: /projects/:path/
