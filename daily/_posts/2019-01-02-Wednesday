@@ -1,0 +1,24 @@
+---
+layout: post
+title: 2019-01-02 Wednesday
+date: 2019-01-02
+tags: microblog log
+---
+
+Nicole’s work will be moving offices, to a much less convenient spot for me to drop her off, though it is better accessible from public transit. 🤷🏻‍♀️
+
+I want to give a talk at altconf some time. On automating as much shit as I can because I’m busy launching rockets during the day. But also need to get a successful app to be interesting. This talk will also be more interesting after I start work on the plane.
+
+Got home, worked a little bit on the Inoreader integration stuff for my rss reader. I redid the login workflow to not be a pushed UIViewController, just to be a method on a protocol (LoginController) called by the SettingsViewController. This method returns a Future for the authentication code (or an error), with tomorrow’s work being to have the Settings VC react to that. Also in tomorrow’s work is to have something in the backend trade that authentication code for actual credentials. Might have that code be called from the LoginController - in which case that returned future might just have type `Result<Void, LoginError>`, because it’s called (being in the UI code) won’t need to know about the authentication code, just that it succeeded.
+
+Furthermore, the initial UX will have it feel bolted-on, which makes sense. Going to have to do a lot of thinking for how to make this not feel like the afterthought it really is. With things like:
+
+- handling expired credentials (should I throw up a login dialog whenever it’s detected? How should that be managed? Have it come from some God Root View Controller?)
+- Handling Feeds that are local vs. not local. Some users won’t want to use any kind of feed service, some will want to leave their feed service. Shouldn’t punish either ones.
+	- The most obvious way to do this is to have local feeds mirror cloud-based feeds.
+	- But then there’s the issue of supporting multiple simultaneous accounts. Should I place each thing in their own bucket?
+		- But do I care to spend time on this issue now? Seems like an issue for future-me.
+		- Also, is this a thing that’s actually used/desired?
+- Discoverability. Right now, this is a thing hidden in settings, this is going to have to be more front-facing so that it’s actually used.
+
+That’s a lot to think about for this. There’s some obvious solutions to these, it’s just work to make it as polished as I want it to be.
