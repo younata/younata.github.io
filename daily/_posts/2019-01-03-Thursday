@@ -1,0 +1,25 @@
+---
+layout: post
+title: 2019-01-03 Thursday
+date: 2019-01-03
+tags: microblog log
+---
+
+#### Traffic Sucks
+Bunch of traffic on the way to pick Nicole up from work and then head home. Took about an hour and 45 minutes to travel some 20 miles. Looking forward to the days being warm enough for her to be comfortable riding her bike to work again.
+
+#### Home Automation
+Updated our home automation setup to entirely use the home app. Maybe at some point in the future, I’ll go back to [Home Assistant](https://www.home-assistant.io), but for our smart-light-only home setup, the Home app does all we need. Still running the Home Assistant instance, but none of the automations are being used.
+
+#### Flying
+I go off call on Monday. I’ll schedule a flight lesson for that following weekend, maybe it’ll be my first solo? Or maybe just pattern work to verify that I still got this before I do the solo. Probably still got it. Have some 55 hours, and still haven’t soloed. I’m a bit scared to solo even that slow Cessna.
+
+#### RSS Reader
+All I did for the rss reader was to figure out that the `AccountService` protocol will have at least one method `-accounts` that returns a `Future<Result<[Account], TethysError>>`. All that means is that it’s to be used by the UI to get information about the current accounts logged in. Spent the other parts of my day playing Pandemic with Nicole (We won on hard (6 epidemic cards) mode!).
+
+#### Plane 
+I’ve been spending some time thinking about where I’m going to place the batteries for the electric plane. I was originally going to place them in the wings on the trailing side of the wing spar, but then I thought about it and realized that there’s a lot of weight in front of the firewall that the original plane design assumed would be there and I wasn’t originally going to have there (motor I’ll be using weighs about a fifth the weight of the Rotax 914 that was going to be there). Which means that I actually want to place the battery much more forward than I originally intended - maybe even have some or all of the battery modules be in front of the firewall with the motor and controllers. There’s other reasons to do this too. Having the batteries not in the wings makes accessing them much easier. Otherwise I’d either have to add doors in the wings to access the batteries, or drill out the rivets every time I wanted or needed to do maintenance. It’s much better to place them in areas where maintenance will be easy, especially given that this will be a one-of-a-kind design.
+
+However, if I don’t place them batteries in the wings, then where will I place them? By battery cell volume alone, the modules will be approximately 0.2 m^3, which is a large amount of space. If I ignore the wings, then the other prime spots are in front of the firewall, behind the firewall but in front of the panel, and behind the pilot/passenger. I looked at the build plans, and there doesn’t appear to be room under the two seats, though I might be able to get around that if I reinforce the battery modules underneath the seats.
+
+I should really take sling up on the offer for CAD designs of the plane.
