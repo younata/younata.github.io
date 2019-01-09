@@ -1,0 +1,33 @@
+---
+layout: post
+title: 2019-01-08 Tuesday
+date: 2019-01-08
+tags: microblog log
+---
+
+# Sick
+Home sick again, not even able to concentrate on work. I was able to concentrate on the rss reader, though. However, that work is actually developing code, as opposed to my day job which is more talking with people than anything else.
+
+I feel well enough that I’m probably going to work from home tomorrow. Hopefully I’ll be feeling well enough later in the week to go in - I need to charge the car.
+
+# AGDQ
+
+[AGDQ](https://gamesdonequick.com) is this week, which is cool. Always something to watch/look forward to. There’s an [ical feed](https://horaro.org/agdq/2019) of the current GDQ schedule that I subscribed to. It’ll only be for this current GDQ, so I’ll need to add the next in whenever the schedule becomes available. I would like to have an automated way to look for the future GDQ schedules and add them to my calendar. This might be an ical feed that subscribes to those feeds and updates based on them?
+
+# RSS Reader
+
+I did a massive amount of work on my rss reader over the past few days. It’s now possible to log in to inoreader accounts with this, and to stay logged in between sessions. There’s still some polish to apply and other stuff to work on, but this is a huge accomplishment and it’s the first step towards the cloud-enabled rss reader that I need this to be.
+
+Some of the polishes I want to apply are:
+
+- I want the accounts list (which are, under the curtain, implemented entirely synchronously) to be loaded up when the settings screen loads, not to be flashed up after the fact.
+- I still need to handle refreshing the authentication token.
+- I need the add-account experience to be more discoverable. Though, this’ll be looked at once I do the UI overall I’ve been wanting to do (for which I’ll definitely prototype in sketch, as I do not want to waste time fleshing it out in code)
+
+That doesn’t even apply to actually using data from inoreader, which I haven’t even started.
+
+So, yeah, lots done. Lots to do. I’m fairly happy with this right now, though.
+
+# Retro Analysis
+
+Nicole and I have relationship retros once a week. It’s been really helpful for us. We take photos of the board every time and store it for future reference. One of the things I want to do is better track that and then try to see overall trends in the data, so we can actually see how well things have been going for us.
