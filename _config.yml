@@ -15,9 +15,8 @@ kramdown:
   input: GFM
   hard_wrap: false
 
-exclude: [vendor]
+exclude: [vendor, script, Rakefile, Gemfile, Gemfile.lock, README.md]
 
 collections:
   daily:
     output: true
-    permalink: /projects/:path/

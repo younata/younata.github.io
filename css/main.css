@@ -211,6 +211,11 @@ a:visited { color: #205caa; }
   margin: 40px 0 20px;
 }
 
+.post-content h1 {
+  font-size: 40px;
+  letter-spacing: -1.5px;
+}
+
 .post-content h2 {
   font-size: 32px;
   letter-spacing: -1.25px;
@@ -423,6 +428,43 @@ a:visited { color: #205caa; }
 
 }
 
-
-
 code.has-jax {font: inherit; font-size: 100%; background: inherit; border: inherit;}
+
+/* Video */
+
+video {
+    width: 100%;
+    height: auto;
+}
+
+/* Footnotes */
+
+.post-content a.footnote {
+    box-sizing: border-box;
+    display: inline-block;
+    border-radius: 4px;
+    padding: 0 8px;
+    margin-left: 4px;
+    border: solid 1px #205caa;
+}
+.post-content a.footnote {
+    text-decoration: none;
+}
+
+.post-content sup[id^="fnref"] {
+    /* This was easier than figuring out how to tell kramdown to just not insert footnotes in sup */
+    vertical-align: middle;
+    position: relative;
+}
+
+.post-content .footnote-content {
+    position: absolute;
+    top: 20px;
+    width: 15vw;
+    left: calc(-0.25 * 15vw);
+    max-width: 20vw;
+    border: solid 3px #777;
+    border-radius: 8px;
+    background-color: #EEE;
+    padding: 4px;
+}
