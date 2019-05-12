@@ -5,17 +5,15 @@ date: 2016-11-08
 tags: ios, concourse, ci
 ---
 
-Update 2019-05-11: For quite some time now, using houdini directly hasn't been recommended. Use `concourse worker` will still do the right thing.
+Update 2019-05-11: Massively simplified this, now that running houdini directly is no longer needed.
 
-Setting up a macOS worker with Concourse is interesting. Because of licensing issues (as I understand it), you can't just provisioning a mac box on AWS to be a worker, you need to use your own hardware. For that, there does exist a process to configure your Concourse installation to accept external workers (which your mac would be).
+Setting up a macOS worker with Concourse is much easier than it used to be. Now, it's more-or-less plugin and play with the concourse command itself.
 
-I recommend purchasing a separate mac to be a worker (if you don't already have an extra mac to use). Given the [current state of the mac lineup](http://buyersguide.macrumors.com/#Mac) (as of November 2016), I would recommend buying secondhand macs. The point is to not use someone's workstation as your worker.
+I recommend purchasing a separate mac to be a worker, though if you have an extra mac laying around, this is also a good use for it.
 
-This assumes you already have a [Concourse installation w/ bosh setup]({% post_url 2016-11-08-concourse-aws %}).
+This assumes you already have a Concourse installation setup.
 
 ## Configuring the Mac Worker
-
-To configure a Mac worker with Concourse, there's a few steps we need to do.
 
 ### Build Dependencies
 
@@ -48,67 +46,49 @@ Second, disable sleeping on the mac:
 sudo systemsetup -setcomputersleep Never
 ```
 
-### Houdini & Concourse Connection
+### Setting up the Concourse Worker
 
-Next, we need to install Houdini (a no-op Garden backend for macOS). Houdini executes jobs that Concourse hands it. Normally, Concourse jobs are executed in there own virtual machines (containers), which guarantees that an individual job is executed in a clean environment (without affecting the host system). These containers are started up from stemcells (preconfigured virtual machines). For various reasons (my understanding is licensing issues, but that may be wrong), there are no publicly available stemcells of macOS, and the workaround to this is Houdini, which runs a job without any virtualization. Alternatively, you could probably create stemcells for macOS and configure a worker to run jobs on them, but I have no idea how to do that. So, let's set up Houdini and connect it to your Concourse instance.
+On linux (and windows), concourse will create 
 
-01. Make a clean directory for the worker's files:
+Next, we need to install the concourse command. Normally, Concourse jobs are executed in there own containers, which guarantees that an individual job is executed in a clean environment (without affecting the host system). The containerization technology doesn't exist for macOS, so we can only use the "folderization" technology - that is, run each job in a different folder and hope they clean up after themselves and don't interfere with the rest of the system..
+
+1. Make a clean directory for the worker's files:
     
     ```bash
-    $ mkdir /usr/local/concourse_worker
+    $ mkdir -p /usr/local/concourse/work_dir
+    $ mkdir -p /usr/local/concourse/keys
     ```
 
-02. Create an ssh key for the worker to talk with Concourse:
+2. Create an ssh key for the worker to talk with Concourse:
 
     ```bash
-    $ ssh-keygen -t rsa -f /usr/local/concourse_worker/worker_id_rsa -N ''
+    $ ssh-keygen -t rsa -f /usr/local/concourse/keys/worker_id_rsa -N ''
     ```
 
-03. Add the key to the TSA in your concourse Manifest (see the [oncourse/bosh documentation](https://concourse.ci/clusters-with-bosh.html#section_configuring-bosh-tsa) for more information):
+3. Add the (public!) key to your concourse host server's authorized keys.
 
-    ```yml
-    instance_groups:
-    - name: web
-      # rest of web config
-      jobs:
-      - name: atc
-        # atc config
-      - name: tsa
-        # rest of tsa config
-        - properties:
-          host_key: # contents of tsa private key
-          host_public_key: # contents of tsa public key
-          authorized_keys:
-            - # contents of worker public key
-    ```
+4. Restart your concourse web instance
 
-04. Redeploy your concourse:
+5. [Download the latest Concourse](https://github.com/concourse/concourse/releases/latest) and expand it in `/usr/local/concourse`:
 
     ```bash
-    $ bosh deploy
+    $ tar -xzf ~/Downloads/concourse-$VERSION-darwin.amd64.tgz /usr/local/concourse/
     ```
 
-05. [Download the latest Houdini](https://github.com/vito/houdini/releases/latest) and install it to `/usr/local/concourse_worker`:
+6. Write a script to run concourse, place it in `/usr/local/concourse/bin/run-worker.sh`:
 
     ```bash
-    $ install ~/Downloads/houdini_darwin_amd64 /usr/local/concourse_worker/houdini
-    ```
-06. Create a worker file (in ~/concourse_worker/worker.json) to describe the new worker:
+    #!/bin/sh -l
 
-    ```bash
-    $ echo '{ "name": "osxworker", "platform": "darwin" }' > /usr/local/concourse_worker/worker.json
-    ```
-
-07. Write a script to run houdini, place it in `/usr/local/concourse_worker/run-houdini.sh`:
-
-    ```bash
-    #!/bin/sh
-
-    export PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
-    /usr/local/concourse_worker/houdini -depot=/usr/local/concourse_worker/containers
+    cd /usr/local/concourse
+    /usr/local/concourse/bin/concourse worker \
+        --work-dir /usr/local/concourse/work_dir \
+        --tsa-host $CONCOURSE_HOST:2222 \
+        --tsa-public-key /usr/local/concourse/keys/tsa_host_key.pub \
+        --tsa-worker-private-key /usr/local/concourse/keys/worker_key
     ```
 
-08. Write a launchctl plist to manage the ssh tunnel script, place it in `/usr/local/concourse_worker/com.example.concourse.houdini.plist` (replace com.example with your reverse domain name):
+7. Write a launchctl plist to manage the worker script, place it in `~/Library/LaunchAgents/com.rachelbrindle.concourse.worker.plist`:
 
     ```xml
     <?xml version="1.0" encoding="UTF-8"?>
@@ -120,12 +100,12 @@ Next, we need to install Houdini (a no-op Garden backend for macOS). Houdini exe
         <key>KeepAlive</key>
         <true/>
         <key>Label</key>
-        <string>com.example.concourse.houdini</string>
+        <string>com.rachelbrindle.concourse.worker</string>
         <key>Nice</key>
         <integer>0</integer>
         <key>ProgramArguments</key>
         <array>
-        <string>/usr/local/concourse_worker/run-houdini.sh</string>
+        <string>/usr/local/concourse/bin/run_worker.sh</string>
         </array>
         <key>RunAtLoad</key>
         <true/>
@@ -133,59 +113,17 @@ Next, we need to install Houdini (a no-op Garden backend for macOS). Houdini exe
     </plist>
     ```
 
-09. Write a script to run an ssh tunnel between the worker and your concourse installation, place it in `/usr/local/concourse_worker/ssh-tunnel.sh` (replace ci.example.com with your concourse host):
-
-    ```bash
-    #!/bin/sh
-
-    ssh -p 2222 ci.example.com -i /usr/local/concourse_worker/worker_id_rsa -R 0.0.0.0:0:127.0.0.1:7777 forward-worker < /usr/local/concourse_worker/worker.json
-    ```
-
-10. Write a launchctl plist to manage the ssh tunnel script, place it in `/usr/local/concourse_worker/com.example.concourse.ssh-tunnel.plist`:
-
-    ```xml
-    <?xml version="1.0" encoding="UTF-8"?>
-    <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-    <plist version="1.0">
-    <dict>
-        <key>KeepAlive</key>
-        <true/>
-        <key>Label</key>
-        <string>com.example.concourse.ssh-tunnel</string>
-        <key>Nice</key>
-        <integer>0</integer>
-        <key>ProgramArguments</key>
-        <array>
-            <string>/usr/local/concourse_worker/ssh-tunnel.sh</string>
-        </array>
-        <key>RunAtLoad</key>
-        <true/>
-    </dict>
-    </plist>
-    ```
-
-11. Install the 3 launchctl scripts for the user:
-
-    ```bash
-    $ cp /usr/local/concourse_worker/*.plist ~/Library/LaunchAgents/
-    ```
-
-12. Open System Preferences and set the machine to automatically log in:
+8. Open System Preferences and set the machine to automatically log in:
 
     ![AutoLoginImage](/assets/concourse_houdini_auto_login.png)
 
 Now, if you reboot, you should be see that this machine is now a worker for your concourse instance.
 
-To manually ensure that you correctly configured houdine, then simply run the `/usr/local/concourse_worker/run-houdini.sh` and the `/usr/local/concourse_worker/ssh-tunnel.sh` scripts in separate terminals. You should see output that indicates the worker is correctly configured.
-
-Otherwise, to run houdini and connect it to your concourse installation, run
+Otherwise, to run the worker and connect it to your concourse instance, run
 
 ```bash
-$ launchctl load ~/Library/LaunchAgents/com.example.concourse.houdini.plist
-$ launchctl load ~/Library/LaunchAgents/com.example.concourse.ssh-tunnel.plist
+$ launchctl load ~/Library/LaunchAgents/com.rachelbrindle.concourse.worker.plist
 ```
-
-Or, just reboot.
 
 ## Configuring jobs to use the Mac Worker
 

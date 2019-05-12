@@ -5,6 +5,12 @@ date: 2016-11-08
 tags: concourse, ci, pivotal, aws, configure, set up
 ---
 
+Update 2019-05-11: Don't do this. For most usages, it's BY FAR cheaper to run concourse on a [small linode instance](https://knowledge.rachelbrindle.com/programming/ci/concourse.html#concourse-on-linode).
+
+Original article for posterity:
+
+---
+
 I just spent 4 days trying to deploy [Concourse](https://concourse.ci) on AWS. I finally got it set up by cheating and asking the Concourse dev team for help (One of the benefits of working at the company funding Concourse's development). I wanted to document how one should deploy Concourse to AWS, and some of the pitfalls I came across.
 
 Note that because the tooling literally changes all the time (bosh bootloader is currently on the order of months old right now), this may be out of date by the time you read this.
