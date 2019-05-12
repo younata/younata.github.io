@@ -5,6 +5,8 @@ date: 2016-11-08
 tags: ios, concourse, ci
 ---
 
+Update 2019-05-11: For quite some time now, using houdini directly hasn't been recommended. Use `concourse worker` will still do the right thing.
+
 Setting up a macOS worker with Concourse is interesting. Because of licensing issues (as I understand it), you can't just provisioning a mac box on AWS to be a worker, you need to use your own hardware. For that, there does exist a process to configure your Concourse installation to accept external workers (which your mac would be).
 
 I recommend purchasing a separate mac to be a worker (if you don't already have an extra mac to use). Given the [current state of the mac lineup](http://buyersguide.macrumors.com/#Mac) (as of November 2016), I would recommend buying secondhand macs. The point is to not use someone's workstation as your worker.
