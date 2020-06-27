@@ -1,0 +1,20 @@
+---
+layout: post
+date: 2020-06-26
+title: WWDC 2020 - Still unable to unit test SwiftUI code
+tags: swiftui swift unit test testing uitest ui
+---
+
+A few days ago, I [tweeted](https://twitter.com/younata/status/1275930148366217216?s=20) about a [feedback](http://www.openradar.me/FB7778358) I filed for testing SwiftUI code. I also mentioned that I had applied for a lab session with the SwiftUI team about this. Unfortunately, my requests for lab sessions with the SwiftUI team were denied. However, I did also make a request for a lab session with the Testing and Continuous Integration team, where we talked about the different approaches that currently exist for testing SwiftUI Code.
+
+As the engineers and I discussed, there are 3 ways to test SwiftUI code.
+
+1. UI Testing. For those unaware, UI Testing involves running the app and tests in separate processes, with an XPC tunnel to control the app via the accessibility API. As you might imagine, this is quite complex and, as a result, is incredibly flaky and much slower (hundreds to thousands of times slower) than a unit test. In addition, there are certain classes of behavior that you either can't test, or are unreasonably difficult to test with UI Tests.
+2. Leverage SwiftUI Previews to create a checklist (my words) of the different states, which you will manually interact with and verify. This is also Apple's suggestion from [last year](https://developer.apple.com/videos/play/wwdc2019/233/). You can have multiple previews, and the SwiftUI previews in Xcode 12 are significantly better than they were a year ago. However, while you can (and should) have preview for each different state your view can be in, these still aren't automated tests. Using previews for your verification relies upon the engineer to correctly follow whatever checklist they come up with for verifying the behavior. And because it's a manual process that has to be repeated each time, there's extra resistance to adding new items to the checklist. Part of why we use automated tests is to reduce the resistance in adding tests for new (or existing) behavior.
+3. As much as possible, move logic outside of your Views and in to the ViewModel or Model layers. This is a good practice regardless of the ability to unit test the code, and is similar to what [Gary Bernhardt](https://twitter.com/garybernhardt) talks about in [Functional Core, Imperative Shell](https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell), and [Boundaries](https://www.destroyallsoftware.com/talks/boundaries). Doing this, you're reducing the untested surface area as much as possible. This is also pretty much your only option when testing WatchOS apps.
+
+There's also a fourth way that I came across a few days ago. It's possible to use the [reflection APIs](https://developer.apple.com/documentation/swift/mirror) to examine the state of views. This is how [ViewInspector](https://github.com/nalexn/ViewInspector) works (along with some unsafe type casting that will likely break in future updates). There are various reasons why using a third party library to verify your UI isn't the best plan, but if you're really intent on unit testing your SwiftUI code, this will be your best bet for quite some time. I'm sure Alexey would appreciate pull requests to get addition features working.
+
+This isn't the "Check out this very well documented API that does exactly what you want" answer I was really hoping to hear. These solutions are not good enough that, all else being a go, I'd recommended using SwiftUI for production code at work. For now, I'm going to stick with UIKit, except maybe in smaller, sectioned-off bits of code where I'm ok with having that untested surface area.
+
+The engineers said that the unit testing story for SwiftUI "isn't nailed down yet" and they emphasized how helpful it is to write feedback and post on the developer forums, and that they (Apple) uses this to prioritize their backlog. To that end, please feel free to duplicate [FB7778358](http://www.openradar.me/FB7778358), and I'll endeavor to post on the developer forums.
