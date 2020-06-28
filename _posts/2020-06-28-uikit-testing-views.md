@@ -1,9 +1,9 @@
-—
+---
 layout: post
-title: Unit Testing UIKit - Part 1
+title: Unit Testing UIKit - Views
 date: 2020-06-28
 tags: ios unit testing uikit view controller
-—
+---
 
 Unit testing is a way to automate verification of code. It’s not the be-all end-all of program verification, but it’s a really good start. Unit testing goes a long way towards augmenting QA and manual verification to ensure that your code works.
 
@@ -13,7 +13,7 @@ The standard intro-to-testing examples are things like “verify that mathematic
 
 # Implementation
 
-Let’s start with the following swift code, which is a view controller for various boolean settings. The responsibility for this view controller is to allow the user to view and change settings on the device.
+Let’s start with the following swift code, which is a view controller for a list of `UISwitch`s. The responsibility for this view controller is to allow the user to view and change settings on the device.
 
 For the sake of inlining as much as possible, I’m going to programmatically lay out this view controller.
 
@@ -32,21 +32,22 @@ protocol SettingsManager {
 
 class ToggleTableViewCell: UITableViewCell {
     let toggle = UISwitch()
-    
+
     var onToggle: ((Bool) -> Void)?
-    
+
     override func prepareForReuse() {
         onToggle = nil
         super.prepareForReuse()
     }
-    
+
     @objc private func didToggleSwitch() {
         onToggle?(toggle.isOn)
     }
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: nil)
-        
+
+        toggle.addTarget(self, action: #selector(self.didToggleSwitch), for: .valueChanged)
         contentView.addSubview(toggle)
         toggle.translatesAutoresizingMaskIntoConstraints = false
         toggle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16).isActive = true
@@ -57,9 +58,9 @@ class ToggleTableViewCell: UITableViewCell {
         spaceConstraint.priority = .defaultHigh
         spaceConstraint.isActive = true
     }
-    
+
     required init?(coder: NSCoder) {
-        fatalError(“no”)
+        fatalError("no")
     }
 }
 
@@ -72,19 +73,19 @@ class SettingsViewController: UIViewController {
             cellProvider: self.cell(tableView:indexPath:setting:)
         )
     }()
-    
-    init(settingsManager: SettingsManager) {
+
+    init(settingsManager: SettingsManager) { // 1
         self.settingsManager = settingsManager
         super.init(nibName: nil, bundle: nil)
     }
-    
+
     required init?(coder: NSCoder) {
-        fatalError(“no”)
+        fatalError("no")
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+
         view.addSubview(tableView)
         // boilerplate for autolayout.
         tableView.translatesAutoresizingMaskIntoConstraints = false
@@ -92,20 +93,20 @@ class SettingsViewController: UIViewController {
         tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         tableView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-        
+
         // setting up the tableview to display cells
-        tableView.register(ToggleTableViewCell.self, forCellReuseIdentifier: “cell”)
+        tableView.register(ToggleTableViewCell.self, forCellReuseIdentifier: "cell")
         tableView.dataSource = dataSource // set it to use our diffable data source
-        
+
         // load settings data.
         var snapshot = NSDiffableDataSourceSnapshot<Int, Setting>()
         snapshot.appendSections([0])
         snapshot.appendItems(settingsManager.settings())
         dataSource.apply(snapshot)
     }
-    
-    func cell(tableView: UITableView, indexPath: IndexPath, setting: Setting) -> UITableViewCell? { // 1
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: “cell”, for: indexPath) as? ToggleTableViewCell else { return nil }
+
+    func cell(tableView: UITableView, indexPath: IndexPath, setting: Setting) -> UITableViewCell? { // 2
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as? ToggleTableViewCell else { return nil }
         cell.textLabel?.text = setting.name
         cell.toggle.isOn = setting.isEnabled
         cell.onToggle = { [weak self] newValue in
@@ -116,7 +117,8 @@ class SettingsViewController: UIViewController {
 }
 ```
 
-1. This is where I dequeue and confige a `ToggleTableViewCell` with the settings, as well as set the `onToggle` property to update the `SettingsManager`. `[weak self]` is used in the closure declaration to ensure that the cell doesn’t retain the view controller.
+1. I'm using [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) to give the `SettingsViewController` a known/controlled `SettingsManager`. Dependency injection is a best practice for a [number](https://en.wikipedia.org/wiki/Separation_of_concerns) of [reasons](https://en.wikipedia.org/wiki/Loose_coupling), and the reason here is that it enables the tests to control the other layers and domains that the `SettingsViewController` communicates with.
+2. This is where I dequeue and confige a `ToggleTableViewCell` with the settings, as well as set the `onToggle` property to update the `SettingsManager`. `[weak self]` is used in the closure declaration to ensure that the cell doesn’t retain the view controller.
 
 Testing this comes with it’s own set of concerns:
 
@@ -161,70 +163,70 @@ class SettingsViewControllerTest: XCTestCase {
     }
     func testShowsCorrectAmountOfCells() {
         let subject = subjectFactory(settings: [
-            Setting(name: “Foo”, isEnabled: true),
-            Setting(name: “Bar”, isEnabled: true),
-            Setting(name: “Baz”, isEnabled: true),
+            Setting(name: "Foo", isEnabled: true),
+            Setting(name: "Bar", isEnabled: true),
+            Setting(name: "Baz", isEnabled: true),
         ]).subject
-        
+
         XCTAssertEqual(subject.tableView.numberOfSections, 1)
-        XCTAssertEqual(subject.tableView.numberOfRows(inSection: 0), 1) // 3
+        XCTAssertEqual(subject.tableView.numberOfRows(inSection: 0), 3) // 3
     }
-    
+
     func testEachCellRepresentsASetting() throws {
         let subject = subjectFactory(settings: [
-            Setting(name: “Foo”, isEnabled: true),
-            Setting(name: “Bar”, isEnabled: false)
+            Setting(name: "Foo", isEnabled: true),
+            Setting(name: "Bar", isEnabled: false)
         ]).subject
-        
+
         // 4
         let fooCell = try XCTUnwrap(subject.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ToggleTableViewCell) // 4.1, 4.2
-        XCTAssertEqual(fooCell.textLabel?.text, “Foo”) // 4.3
+        XCTAssertEqual(fooCell.textLabel?.text, "Foo") // 4.3
         XCTAssertTrue(fooCell.toggle.isOn)
-        
+
         // 4.4: Repeat for testing the other cell.
         let barCell = try XCTUnwrap(subject.tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ToggleTableViewCell)
-        XCTAssertEqual(barCell.textLabel?.text, “Bar”)
+        XCTAssertEqual(barCell.textLabel?.text, "Bar")
         XCTAssertFalse(barCell.toggle.isOn)
     }
-    
+
     func testTogglingUpdatesTheSettingsManager() throws {
         let (subject, manager) = subjectFactory(settings: [
-            Setting(name: “Foo”, isEnabled: true),
-            Setting(name: “Bar”, isEnabled: false)
+            Setting(name: "Foo", isEnabled: true),
+            Setting(name: "Bar", isEnabled: false)
         ]) // 5
-        
-        let fooCell = try XCTUnwrap(subject.tableView.cellForRow(at: IndexPath(row: 0, section: 0) as? ToggleTableViewCell)
-        
+
+        let fooCell = try XCTUnwrap(subject.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ToggleTableViewCell)
+
         fooCell.toggle.isOn = false
-        fooCell.toggle.sendActions(forControlEvent: .valueChanged) // 5.1
-        
+        fooCell.toggle.sendActions(for: .valueChanged) // 5.1
+
         XCTAssertEqual(
             manager._settings,
             [
-                Setting(name: “Foo”, isEnabled: false),
-                Setting(name: “Bar”, isEnabled: false)
+                Setting(name: "Foo", isEnabled: false),
+                Setting(name: "Bar", isEnabled: false)
             ]
         ) // 5.2
-        
-        // 5.3: Do it again with a cell that starts in the On position.
-        let barCell = try XCTUnwrap(subject.tableView.cellForRow(at: IndexPath(row: 1, section: 0) as? ToggleTableViewCell)
 
-        fooCell.toggle.isOn = true
-        barCell.toggle.sendActions(forControlEvent: .valueChanged)
-        
+        // 5.3: Do it again with a cell that starts in the On position.
+        let barCell = try XCTUnwrap(subject.tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ToggleTableViewCell)
+
+        barCell.toggle.isOn = true
+        barCell.toggle.sendActions(for: .valueChanged)
+
         XCTAssertEqual(
             manager._settings,
             [
-                Setting(name: “Foo”, isEnabled: false),
-                Setting(name: “Bar”, isEnabled: true)
+                Setting(name: "Foo", isEnabled: false),
+                Setting(name: "Bar", isEnabled: true)
             ]
         )
     }
 }
 ```
 
-1. I use the subject factory paradigm here, instead of overriding and using `setup()`. This is mostly a style choice, but it does allow me to compose different subject factory functions depending on the needs of a test, while still overall sharing the setup code between each test.
-2. Here I simulate a little bit of the view controller lifecycle. Specifically, I only need to cause the view to load, which is done by accessing the `view` property. The `bounds` of the view is then set so that the `tableView` will have a non-zero size. The bounds is set to the iPhone 6s point resolution for no reason. Once the bounds is set, a layout pass is forced, causes the `tableView` to pick up the size of the view as it’s size (per autolayout).
+1. I use the subject factory pattern here, instead of overriding and using `setup()`. This is mostly a style choice, but it does allow me to compose different subject factory functions depending on the needs of a test, while still overall sharing the setup code between each test.
+2. Here I simulate a little bit of the view controller lifecycle. Specifically, I only need to cause the view to load, which is done by accessing the `view` property. The `bounds` of the view is then set so that the `tableView` will have a non-zero size. The `bounds` is set to the iPhone 6s point resolution for no reason. Once the `bounds` is set, a layout pass is forced, causes the `tableView` to pick up the size of the view as it’s size (per autolayout). The `bounds` property is used (and not the `frame` property) because we don't care about whatever view contains this view controller's view - it's not being placed in a different view controller - and so it doesn't make sense to set the frame because there is no superview's coordinate system. The other reason to use the `bounds` property is that the `bounds` is not affected by the [`transform`](https://developer.apple.com/documentation/uikit/uiview/1622459-transform) property. Which means that setting bounds will be valid regardless of what the `transform` is. Having the tests know as little as possible about the inner workings of the thing being tested is important for writing robust tests.
 3. In `testShowsCorrectAmountOfCells`, I’m verifying the tableView shows the correct amount of cells. This is by first verifying that there’s only one section, and then verifying that there’s only as much cells in that section as there are settings objects. It’s important to use the actual value we expect to see. If the test was `XCTAssertEqual(subject.tableView.numberOfRows(inSection: 0), settings.count)`, then this is actually a weaker test because your test is not verifying the behavior you expect to see, but instead is duplicating the behavior. Put another way, it’s the difference between `assert(2 + 4 == 6)` and `assert(2 + 4 == 2 + 4)`.
 4. In `testEachCellRepresentsASetting`, I’m now verifying the contents of the cells.
     1. First, I’m getting each cell by their respective `IndexPath`. Note that `UITableView`’s [`cellForRow(at:)`](https://developer.apple.com/documentation/uikit/uitableview) method returns nil both when the given `IndexPath` is outside of the `UITableView`’s range, and when the requested cell is not visible. In other words, [`cellForRow(at:)`](https://developer.apple.com/documentation/uikit/uitableview) will only work for cells that have already been loaded. If you want to request a cell not yet visible (not within the bounds of the `UITableView`), then you need to go directly to the underlying `UITableViewDataSource`, using the [`tableView(:cellForRowAt:)`](https://developer.apple.com/documentation/uikit/uitableviewdatasource/1614861-tableview) method. I use this as `let cell = tableView.dataSource?.tableView(tableView, cellForRowAt: IndexPath(row: 0, section: 0))`, which allows me to avoid publicly exposing whatever data source is used.
@@ -236,6 +238,8 @@ class SettingsViewControllerTest: XCTestCase {
        Sometimes, I create an extension on the more commonly used controls in my code base to consolidate the “update control state” and “send actions” calls.[^1]
     2. This assertion is doing two things: It’s verifying the behavior that the correct arguments are passed to the `SettingsManager`’s `set(isEnabled:setting:)` - which is the desired behavior to verify - and it’s also verifying that no other calls are made to the SettingsManager that would affect state (or at least, the other calls cancel each other out). I’ve also implemented fake implementations of properties such that they record the arguments and then I assert that the correct arguments are passed. With more complex protocols, or where the “Simple” implementation isn’t essentially an in-memory database, I will do that. But for something like this? It’s more of a style choice than anything else.
     3. As with earlier, we do this again, for the other cell.
+
+That's probably a bit overwhelming. But, it boils down to doing the minimum work to have UIKit call the methods that would be called if this were a real user interaction. The hard part is figuring out what that work is. For example, It took me a couple years before I realized that if I could make sure the tableView is actually displaying the cells I'm asking for, then I can ask the `tableView` for those cells. Prior to that realization, I was always asking the `tableView`'s `dataSource` for the cells.
 
 ## Quick
 The implementation of these tests using Quick has slightly less repetition, and reads immensely better. The notes I write will be contrasting the Quick implementation of the test with the XCTest implementation, so read the above notes for any questions.
@@ -250,78 +254,78 @@ class SettingsViewControllerSpec: QuickSpec {
     override func spec() {
         var subject: SettingsViewController!
         var settingsManager: SimpleSettingsManager!
-        
+
         beforeEach {
             settingsManager = SimpleSettingsManager()
             settingsManager._settings = [
-                Setting(name: “Foo”, isEnabled: true),
-                Setting(name: “Bar”, isEnabled: false)
+                Setting(name: "Foo", isEnabled: true),
+                Setting(name: "Bar", isEnabled: false)
             ]
-            
+
             subject = SettingsViewController(settingsManager: settingsManager)
-            viewController.view.bounds = CGRect(x: 0, y: 0, width: 375, height: 667)
-            viewController.view.layoutIfNeeded()
+            subject.view.bounds = CGRect(x: 0, y: 0, width: 375, height: 667)
+            subject.view.layoutIfNeeded()
         }
-       
-        it(“has a row for each cell”) { // 1
+
+        it("has a row for each cell") { // 1
             expect(subject.tableView.numberOfSections).to(equal(1))
             expect(subject.tableView.numberOfRows(inSection: 0)).to(equal(2))
             // 2
         }
-        
-        describe(“the first cell”) { // 3
+
+        describe("the first cell") { // 3
             var cell: ToggleTableViewCell?
             beforeEach {
                 cell = subject.tableView.cellForRow(at: IndexPath(row: 0, section: 0)) as? ToggleTableViewCell
             }
-            
-            it(“shows the first setting’s name”) {
-                expect(cell?.textLabel?.text).to(equal(“Foo”))
+
+            it("shows the first setting’s name") {
+                expect(cell?.textLabel?.text).to(equal("Foo"))
             }
-            
-            it(“sets the toggle’s isOn to reflect the setting’s isEnabled”) {
+
+            it("sets the toggle’s isOn to reflect the setting’s isEnabled") {
                 expect(cell?.toggle.isOn).to(beTrue())
             }
-            
-            context(“when toggled”) {
+
+            context("when toggled") {
                 beforeEach {
                     cell?.toggle.isOn = false
                     cell?.toggle.sendActions(for: .valueChanged)
                 }
-                
-                it(“updates the settings manager with the new value”) {
+
+                it("updates the settings manager with the new value") {
                     expect(settingsManager._settings).to(equal([
-                        Setting(name: “Foo”, isEnabled: false),
-                        Setting(name: “Bar”, isEnabled: false)
+                        Setting(name: "Foo", isEnabled: false),
+                        Setting(name: "Bar", isEnabled: false)
                     ]))
                 }
             }
         }
-        
-        describe(“the second cell”) {
+
+        describe("the second cell") {
             var cell: ToggleTableViewCell?
             beforeEach {
                 cell = subject.tableView.cellForRow(at: IndexPath(row: 1, section: 0)) as? ToggleTableViewCell
             }
-            
-            it(“shows the second setting’s name”) {
-                expect(cell?.textLabel?.text).to(equal(“Bar”))
+
+            it("shows the second setting’s name") {
+                expect(cell?.textLabel?.text).to(equal("Bar"))
             }
-            
-            it(“sets the toggle’s isOn to reflect the setting’s isEnabled”) {
+
+            it("sets the toggle’s isOn to reflect the setting’s isEnabled") {
                 expect(cell?.toggle.isOn).to(beFalse())
             }
-            
-            context(“when toggled”) {
+
+            context("when toggled") {
                 beforeEach {
                     cell?.toggle.isOn = true
                     cell?.toggle.sendActions(for: .valueChanged)
                 }
-                
-                it(“updates the settings manager with the new value”) {
+
+                it("updates the settings manager with the new value") {
                     expect(settingsManager._settings).to(equal([
-                        Setting(name: “Foo”, isEnabled: true),
-                        Setting(name: “Bar”, isEnabled: true)
+                        Setting(name: "Foo", isEnabled: true),
+                        Setting(name: "Bar", isEnabled: true)
                     ]))
                 }
             }
@@ -347,71 +351,71 @@ class SettingsViewControllerSpec: QuickSpec {
     override func spec() {
         var subject: SettingsViewController!
         var settingsManager: SimpleSettingsManager!
-        
+
         beforeEach {
             settingsManager = SimpleSettingsManager()
             settingsManager._settings = [
-                Setting(name: “Foo”, isEnabled: true),
-                Setting(name: “Bar”, isEnabled: false)
+                Setting(name: "Foo", isEnabled: true),
+                Setting(name: "Bar", isEnabled: false)
             ]
-            
+
             subject = SettingsViewController(settingsManager: settingsManager)
-            viewController.view.bounds = CGRect(x: 0, y: 0, width: 375, height: 667)
-        viewController.view.layoutIfNeeded() // 2
+            subject.view.bounds = CGRect(x: 0, y: 0, width: 375, height: 667)
+            subject.view.layoutIfNeeded() // 2
         }
-       
-        it(“has a row for each cell”) {
+
+        it("has a row for each cell") {
             expect(subject.tableView.numberOfSections).to(equal(1))
-            expect(subject.tableView.numberOfRows(inSection: 0)).to(equal(2))    
+            expect(subject.tableView.numberOfRows(inSection: 0)).to(equal(2))
         }
-        
+
         func itBehavesLikeACell(row: Int, name: String, isOn: Bool, updatedSettings: [Setting]) {
             var cell: ToggleTableViewCell?
             beforeEach {
                 cell = subject.tableView.cellForRow(at: IndexPath(row: row, section: 0)) as? ToggleTableViewCell
             }
-            
-            it(“shows the first setting’s name”) {
+
+            it("shows the first setting’s name") {
                  expect(cell?.textLabel?.text).to(equal(name))
             }
-            
-            it(“sets the toggle’s isOn to reflect the setting’s isEnabled”) {
+
+            it("sets the toggle’s isOn to reflect the setting’s isEnabled") {
                 expect(cell?.toggle.isOn).to(equal(isOn))
             }
-            
-            context(“when toggled”) {
+
+            context("when toggled") {
                 beforeEach {
                     guard let toggle = cell?.toggle else { return }
                     toggle.isOn = !toggle.isOn
                     toggle.sendActions(for: .valueChanged)
                 }
-                
-                it(“updates the settings manager with the new value”) {
+
+                it("updates the settings manager with the new value") {
                     expect(settingsManager._settings).to(equal(updatedSettings))
                 }
             }
         }
-        
-        describe(“the first cell”) {
+
+        describe("the first cell") {
             itBehavesLikeACell(
                 row: 0,
-                name: “Foo”,
+                name: "Foo",
                 isOn: true,
                 updatedSettings: [
-                    Setting(name: “Foo”, isEnabled: false),
-                    Setting(name: “Bar”, isEnabled: false)
+                    Setting(name: "Foo", isEnabled: false),
+                    Setting(name: "Bar", isEnabled: false)
                 ]
             )
         }
-        
-        describe(“the second cell”) {
+
+        describe("the second cell") {
             itBehavesLikeACell(
                 row: 1,
-                name: “Bar”,
+                name: "Bar",
                 isOn: false,
                 updatedSettings: [
-                    Setting(name: “Foo”, isEnabled: true),
-                    Setting(name: “Bar”, isEnabled: true)
+                    Setting(name: "Foo", isEnabled: true),
+                    Setting(name: "Bar", isEnabled: true)
                 ]
             )
         }
@@ -424,21 +428,25 @@ This does make the tests much harder to update if, for example, you wanted to as
 
 Instead of using a function, you can also use Quick’s [`sharedBehavior`](https://github.com/Quick/Quick/blob/master/Documentation/en-us/SharedExamples.md#shared-examples). You would pass in different arguments to the `sharedBehavior` tests as a dictionary that’s created for each test. This has some benefits, but they do not outweigh the benefit of type safety that using a function provides.
 
-And that’s an introduction to writing unit tests against UIKit. Hopefully this is enough to get started with simple interactions between a view and a model. Later posts will deal with mimicking interactions with other `UIControl`s, interactions between `UIViewController`s, handling other kinds of asynchronous behavior, writing custom Nimble matchers, and more.
+And that’s an introduction to writing unit tests against UIKit. Hopefully this is enough to get started with simple interactions between a view and a model. Testing is a skill. It will be hard at first, but as you write more tests, it will get easier. You'll start to internalize what it means to write a good test, and how to recognize a bad test and how it could be improved.
 
-[^1]: For example, my test helper for `UISwitch` looks like:
+---
 
-```swift
-import UIKit
+[^1]:  
 
-extension UISwitch {
-    func toggle() {
-        isOn = !isOn
-        sendActions(for: .valueChanged)
+    For example, my test helper for `UISwitch` looks like:  
+    
+    ```swift
+    import UIKit
+    
+    extension UISwitch {
+        func toggle() {
+            isOn = !isOn
+            sendActions(for: .valueChanged)
+        }
     }
-}
-```
+    ```
 
-Other `UIControl`’s are more complex, and, as such, I have more complex helpers for them.
+    Other `UIControl`’s are more complex, and, as such, I have more complex helpers for them.
 
 [^2]: These are called rspec-like because rspec was the first framework (or at least, the first popular framework) with this style of branching syntax. They are also known as BDD frameworks.
