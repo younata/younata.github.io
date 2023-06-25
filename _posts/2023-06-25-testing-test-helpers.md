@@ -1,6 +1,6 @@
 ---
 layout: post
-title: You should Test Test Helpers
+title: Testing Test Helpers
 date: 2023-06-25
 tags: swift, tdd, xctest, testing
 ---
