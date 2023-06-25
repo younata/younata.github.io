@@ -82,7 +82,7 @@ This uses the newer [`UIControl.event.primaryActionTriggered` semantic event](ht
 
 ### When to write Tests for a Test Helper
 
-Before we refactor `IncrementerComponentTests` to use this new helper, we should consider writing a test to verify that `tap()` works as we expect it should. Not all test helpers need their own tests. Some are very specific and will only be used in a place where it will be easy to diagnose when they fail. My personal rule-of-thumb is that once a component is going to be used in more than 1 place, it needs its own tests. [1] This applies to production code and test code.
+Before we refactor `IncrementerComponentTests` to use this new helper, we should consider writing a test to verify that `tap()` works as we expect it should. Not all test helpers need their own tests. Some are very specific and will only be used in a place where it will be easy to diagnose when they fail. My personal rule-of-thumb is that once a component is going to be used in more than 1 place, it needs its own tests. [^1] This applies to production code and test code.
 
 ## Testing the Test Helper
 
@@ -148,7 +148,7 @@ final class UIButtonTapTests: XCTestCase {
 }
 ```
 
-With that written, we can run the tests to verify that `tap` works and... it fails. Huh. [2]
+With that written, we can run the tests to verify that `tap` works and... it fails. Huh. [^2]
 
 ![Xcode showing failing tests for the tap test helper](/assets/testing_test_helpers/failing_test_helper_tests.png)
 
@@ -283,6 +283,6 @@ Now `IncrementerComponentTests` is much easier to understand, and we have a new 
 
 I hope this sufficiently demonstrates the value of testing your own test helpers. It's not that much extra effort, and knowing that your tools work as they're supposed to pays off in spades when you're diagnosing and debugging failures.
 
-[1]: This is very similar to my rule for when to pull out a `private` API of some component into a `public` one of a dependency. Once a `private` API is called from more than 3 places, it needs to be pulled out into a `public` API with its own tests.
+[^1]: This is very similar to my rule for when to pull out a `private` API of some component into a `public` one of a dependency. Once a `private` API is called from more than 3 places, it needs to be pulled out into a `public` API with its own tests.
 
-[2]: This is something I learned while writing this. For UIButton (as of iOS 17, beta 2), `.touchUpInside` also means `.primaryActionTriggered`, but `.primaryActionTriggered` does not also mean `.touchUpInside`. Wild.
+[^2]: This is something I learned while writing this. For UIButton (as of iOS 17, beta 2), `.touchUpInside` also means `.primaryActionTriggered`, but `.primaryActionTriggered` does not also mean `.touchUpInside`. Wild.
