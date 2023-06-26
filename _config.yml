@@ -3,8 +3,10 @@ title: Rachel Brindle
 description: "Pilot. Software Engineer. Building an Electric Airplane"
 baseurl: ""
 url: "https://younata.github.io"
-twitter_username: younata
 github_username: younata
+mastodon:
+  username: "@younata@tech.lgbt"
+  url: "https://tech.lgbt/@younata"
 
 # Build settings
 markdown: kramdown
