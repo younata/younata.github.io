@@ -5,7 +5,13 @@ date: 2023-06-25
 tags: swift, tdd, xctest, testing
 ---
 
-Writing tests for code you ship is considered good practice. It helps verify that you didn't ship bugs. It helps you verify that you fixed a bug that was previously shipped. You're not infallible, and tests help prevent mistakes by serving as an executable way to verify the code matches your expectations. In recent years, I've come to extend this practice to include most test helpers.
+Writing tests for code you ship is a good thing to do. It helps verify that you didn't ship bugs. It helps you verify that you fixed a bug that was previously shipped. You're not infallible, and tests help prevent mistakes by serving as an executable way to verify the code matches your expectations. In recent years, I've come to extend this practice to include most test helpers.
+
+<div class="aside">
+<b>TL;DR</b>
+<br />
+Looking just to copy the test helper code? Look at the code in the <a href="#conclusion">conclusion</a>.
+</div>
 
 ## What is a Test Helper?
 
@@ -77,6 +83,13 @@ extension UIButton {
     }
 }
 ```
+
+<div class="aside">
+<b>Warning!</b>
+<br />
+As we'll see in a little bit, this test helper doesn't work in certain, important, cases.
+</div>
+
 
 This uses the newer [`UIControl.event.primaryActionTriggered` semantic event](https://developer.apple.com/documentation/uikit/uicontrol/event/1618222-primaryactiontriggered) to send actions, which should hopefully be more future-proof for sending events like this.
 
