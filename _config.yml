@@ -5,8 +5,8 @@ baseurl: ""
 url: "https://younata.github.io"
 github_username: younata
 mastodon:
-  username: "@younata@tech.lgbt"
-  url: "https://tech.lgbt/@younata"
+  username: "@younata@hachyderm.io"
+  url: "https://hachyderm.io/@younata"
 
 # Build settings
 markdown: kramdown
