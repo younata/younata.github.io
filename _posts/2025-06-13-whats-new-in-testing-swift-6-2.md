@@ -5,15 +5,21 @@ date: 2025-06-13
 tags: swift, tdd, testing, xctest, xcode
 ---
 
-Notes: This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). That talk was recorded, and I'll post the video once it's uploaded. This post is essentially an edited form of my speaker notes.
+<div class="aside">
+<b>Note</b>
+<br />
+This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). That talk was recorded, and I'll post the video once it's uploaded. This post is an edited form of my speaker notes.
+</div>
 
-Today I want to talk about What's New In Testing for Swift 6.2/Xcode 26.
+Today I want to ~talk~write about What's New In Testing for Swift 6.2/Xcode 26.
 
 First, I'll cover the new and upcoming things in Swift Testing. Then we'll move into XCTest and finally finishing with Automation Tests.
 
+## What's Not New
+
 Before we talk about what did change, I'll start with what didn't change:
 
-6 years on, there is still no way to unit test code using SwiftUI. The official guidance remains use UI Automation Tests and SwiftUI Previews. Unsurprising, but extremely disappointing. I love that third party tools like [ViewInspector](https://github.com/nalexn/ViewInspector) exist - I even [gave a talk on using ViewInspector here last year](https://blog.rachelbrindle.com/2025/06/12/testing-swiftui-and-swiftconcurrency/) - but I really wish I didn’t have to use them.
+6 years on, there is still no way to unit test code using SwiftUI. The official guidance remains use UI Automation Tests and SwiftUI Previews. Unsurprising, but extremely disappointing. I love that third party tools like [ViewInspector](https://github.com/nalexn/ViewInspector) exist - I even [gave a talk on using ViewInspector last year](https://blog.rachelbrindle.com/2025/06/12/testing-swiftui-and-swiftconcurrency/) - but I really wish I didn’t have to use them.
 
 Additionally, UI Automation tests still require you to use XCTest. Personally, this is less disappointing to me, but I do know some people are extremely excited about this.
 
@@ -27,9 +33,9 @@ To recap, Swift Testing is extremely new - it was [publicly announced in Septemb
 
 In March, the [Testing Workgroup](https://www.swift.org/testing-workgroup/) was formalized with our first meeting on March 10th.
 
-The Testing workgroup was created to govern the Swift Testing and Corelibs XCTest - the open source XCTest - projects, to improve the state of testing in Swift & related tools, and to send feedback to other groups within the swift community about unmet testing needs - like how swiftui should be testable.
+The Testing workgroup was created to govern the [Swift Testing](https://github.com/swiftlang/swift-testing/) and [Corelibs XCTest](https://github.com/swiftlang/swift-corelibs-xctest) - the open source XCTest - projects, to improve the state of testing in Swift & related tools, and to send feedback to other groups within the swift community about unmet testing needs - like how swiftui should be testable.
 
-The Testing Workgroup core team currently consists of Brandon Williams, Brian Croom, Jonathan Greenspan, Mahrten Engels, Paul LeMarquand, Stuart Montgomery and me.
+The Testing Workgroup core team currently consists of Brandon Williams, Brian Croom, Jonathan Grynspan, Maarten Engels, Paul LeMarquand, Stuart Montgomery and me.
 
 We meet every other Monday at 1 pm pacific time. If you're interested in attending, please send a message to [@testing-workgroup](https://forums.swift.org/new-message?groupname=testing-workgroup) on the Swift Forums.
 
@@ -39,18 +45,18 @@ The Testing library follows the Evolution process - proposals are hosted in the 
 
 Since Swift 6.0 was released last year, 6 proposals have been merged for Swift Testing:
 
-Ranged Confirmations
-Return errors from `#expect(throws:)`
-Test Scoping Traits
-Exit Tests
-Attachments
-Evaluate in ConditionTrait
+- Ranged Confirmations
+- Return errors from `#expect(throws:)`
+- Test Scoping Traits
+- Exit Tests
+- Attachments
+- Evaluate in ConditionTrait
 
 The first 3 were included in Swift 6.1, releasing alongside xcode 16.3. The latter 3 are in Swift 6.2, and are currently included in the xcode 26.0 beta. Additionally, there are at least 3 pitches I'm aware of that are being actively discussed, which may or may not make it into the Swift 6.2 release.
 
-### Merged Proposals
+Let's go over each of these, starting with Ranged Confirmations.
 
-Let's go over each of these, starting with Ranged Confirmations:
+### Merged Proposals
 
 #### Ranged Confirmations
 
@@ -167,9 +173,7 @@ struct MySharedBehavior: TestTrait, TestScoping {
 
 Note that `TestScoping` is a different protocol from `TestTrait` - your type conforming to `TestScoping` need not also conform to one of the Trait protocols. Though, there is an override doing the right thing in the extremely common case when your TestScoping type also conforms to `TestTrait`, which I took advantage of in the above code.
 
-Right now, there's not too much extra stuff you can do here. You don't have access to the contents of the `Suite`, nor do you have any access to the internals of the test. So it's rather limited compared to what it could be. The proposal mentions future directions expanding this, which are being actively discussed in the testing workgroup. I'm unsure when or if these'll land: this is really hard to get it to work with the type & concurrency system, plus the testing team is swamped with all their other priorities - like hopefully supporting unit testing swiftui.
-
-Look, I will single-handedly will this into existence.
+Right now, there's not too much extra stuff you can do here. You don't have access to the contents of the `Suite`, nor do you have any access to the internals of the test. So it's rather limited compared to what it could be. The proposal mentions future directions expanding this, which are being actively discussed in the testing workgroup. I'm unsure when or if these'll land: this is really hard to get working with the type & concurrency system, plus the testing team is swamped with all their other priorities - like hopefully working with the SwiftUI team to support unit testing swiftui; look, I will single-handedly will this into existence.
 
 #### Exit Tests
 
@@ -318,7 +322,7 @@ I think these are going to be really useful, especially when combined with Test 
 
 This last pitch is something I wrote, so I obviously think it's great and hope it becomes a thing.
 
-Polling Confirmations is the first part of extending the confirmation api to support other kinds of event monitoring. Currently, you can only use the confirmation api to monitor changes exposed using a callback api. Polling confirmations allow you to monitor changes by polling a method or closure. Which is pretty basic, but immensely powerful. If you've ever used [Nimble](https://github.com/quick/Nimble)'s [Polling Expectations API](https://quick.github.io/Nimble/documentation/nimble/pollingexpectations), you're familiar with how powerful this is.
+Polling Confirmations is the first part of extending the confirmation api to support other kinds of event monitoring. Currently, you can only use the confirmation api to monitor changes exposed using a callback api. Polling confirmations allow you to monitor changes by repeatedly running a method or closure. Which is pretty basic, but immensely powerful. If you've ever used [Nimble](https://github.com/quick/Nimble)'s [Polling Expectations API](https://quick.github.io/Nimble/documentation/nimble/pollingexpectations), you're familiar with how powerful this is.
 
 ```swift
 @Test func `Raising Dolphins takes a while`() {
@@ -360,7 +364,7 @@ final class MyTestCase: XCTestCase {
 
 ### `XCTHitchMetric`
 
-Last up is UI Automation tests. For code, the only change is this new XCTHitchMetric. This is another entry in the XCTMetric API. This allows you to measure the responsiveness and fluidity of your UI in a UI Test:
+Last up is UI Automation tests. For code, the only change is this new [`XCTHitchMetric`](https://developer.apple.com/documentation/xctest/xcthitchmetric). This is another entry in the [`XCTMetric`](https://developer.apple.com/documentation/xctest/xctmetric) API, allowing you to measure the responsiveness and fluidity of your UI in a UI Test:
 
 ```swift
 import XCTest
@@ -399,7 +403,7 @@ Moving on, there's also a new ui test recording & review experience in Xcode 26.
 
 The WWDC 2025 session [Record, Replay, and review: UI automation with Xcode](https://developer.apple.com/videos/play/wwdc2025/344) does a really good job of demoing this.
 
-I do have mixed feelings on the code suggestion for fixing failing ui tests: That normalizes the idea that when a test goes red, it's the test's fault. When really you should consider a failing test to first be a problem in the production code. On the other hand, most teams/engineers don't practice test driven development, so I guess this is understandable, if unfortunate.
+I have mixed feelings on the code suggestion for fixing failing ui tests: That normalizes the idea that when a test goes red, it's the test's fault. When really you should consider a failing test to first be a problem in the production code. On the other hand, most teams/engineers don't practice test driven development, so I guess this is understandable, if unfortunate.
 
 Still, this is a pretty neat new experience that's much better than what it was previously.
 
