@@ -1,12 +1,11 @@
 ---
 layout: post
 title: Advanced Swift Testing - SwiftUI & Swift Concurrency
-date: 2024-06-14
+date: 2025-06-12
 tags: swift, tdd, testing, swiftui, swift concurrency, async, await, swift fakes, fakes, quick, nimble
 ---
 
 Notes: This post is the contents of a talk I gave at [One More Thing 2024](https://omt-conf.com/wwdc24/). While that talk was recorded, the video has not been edited. This post is essentially an edited form of my speaker notes. This talk was written after Swift Testing was announced, but it was still very new and I wasn't familiar with it at all - which is why it's not mentioned at all.
-
 
 Today, I broadly want to cover 3 things:
 
