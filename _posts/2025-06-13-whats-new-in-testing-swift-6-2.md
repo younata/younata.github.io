@@ -8,7 +8,7 @@ tags: swift, tdd, testing, xctest, xcode
 <div class="aside">
 <b>Note</b>
 <br />
-This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). That talk was recorded, and I'll post the video once it's uploaded. This post is an edited form of my speaker notes.
+This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). If you'd prefer, you can watch that talk [not here because it's not uploaded yet](). This post is an edited form of my speaker notes from it.
 </div>
 
 Today I want to ~talk~write about What's New In Testing for Swift 6.2/Xcode 26.
