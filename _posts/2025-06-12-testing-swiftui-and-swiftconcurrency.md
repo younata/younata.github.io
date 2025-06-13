@@ -5,9 +5,13 @@ date: 2025-06-12
 tags: swift, tdd, testing, swiftui, swift concurrency, async, await, swift fakes, fakes, quick, nimble
 ---
 
-Notes: This post is the contents of a talk I gave at [One More Thing 2024](https://omt-conf.com/wwdc24/). While that talk was recorded, the video has not been edited. This post is essentially an edited form of my speaker notes. This talk was written after Swift Testing was announced, but it was still very new and I wasn't familiar with it at all - which is why it's not mentioned at all.
+<div class="aside">
+<b>Note</b>
+<br />
+This post is the contents of a talk I gave at [One More Thing 2024](https://omt-conf.com/wwdc24/). While that talk was recorded, the video has not been edited. This post is essentially an edited form of my speaker notes. This talk was written after Swift Testing was announced, but before it was integrated with xcode. At the time, Swift Testing was still very new, a bit difficult to use outside of a swift package, and I wasn't familiar with it at all - which is why it's not mentioned at all.
+</div>
 
-Today, I broadly want to cover 3 things:
+~~Today~~ In this post, I broadly want to cover 3 things:
 
 First, I’ll go over some testing theory. I’ll cover practices and techniques to make writing tests easier, which we’ll be using throughout this post.
 
@@ -27,14 +31,16 @@ Second is that you are familiar with Swift Concurrency - the async/await feature
 
 - [Meet async/await in Swift - WWDC21](https://developer.apple.com/videos/play/wwdc2021/10132/)
 - [Swift concurrency: Behind the scenes - WWDC21](https://developer.apple.com/videos/play/wwdc2021/10254)
+- [Migrate your app to Swift 6 - WWDC24](https://developer.apple.com/videos/play/wwdc2024/10169/)
+- [Embracing Swift concurrency - WWDC25](https://developer.apple.com/videos/play/wwdc2025/268/)
 
-Third, is that you are familiar with SwiftUI. You’ve created a few Views, and understand a little about managing state in SwiftUI. It’ll also be helpful if you are familiar with the Observation framework introduced last year. If you need a refresher, go check out your favorite apple developer blogger. Linked here is Paul Hudson's page.
+Third, is that you are familiar with SwiftUI. You’ve created a few Views, and understand a little about managing state in SwiftUI. It’ll also be helpful if you are familiar with the [Observation](https://developer.apple.com/documentation/Observation) framework introduced in 2023. If you need a refresher, go check out your favorite apple developer blogger. Linked here is Paul Hudson's page.
 
 - [SwiftUI by Example - Hacking with Swift](https://www.hackingwithswift.com/quick-start/swiftui)
 
 ## Basic Testing Theory
 
-With assumed knowledge covered, let's talk cover some theory about testing.
+With assumed knowledge covered, let's cover some theory about testing.
 
 I don't want this talk to be a doctoral thesis on writing tests, but there are 4 bits of theory I want to cover:
 
@@ -122,9 +128,9 @@ struct HasInjectedDependencies {
 
 Dependency injection is the idea of providing dependencies to an object.
 
-For example, the `NoInjectedDependencies` struct on the left is not using dependency injection. It is directly creating a dependency or accessing a global singleton.
+For example, the `NoInjectedDependencies` struct is not using dependency injection. It is directly creating a dependency or accessing a global singleton.
 
-In contrast, the `HasInjectedDependencies` struct on the right is using dependency injection, it’s being provided with dependencies during init.
+In contrast, the `HasInjectedDependencies` struct is using dependency injection, it’s being provided with dependencies during init.
 
 This provides a number of benefits in terms of improving your app design, such as decoupling your object graph, encouraging you to make your objects smaller, and so on. It also vastly simplifies testing because it allows you to provide fake instances to objects, allowing you to control how much production code is running in a given test.
 
