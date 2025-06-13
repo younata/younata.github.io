@@ -148,6 +148,13 @@ a:visited {
   zoom: 1;
 }
 
+.two-column {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 10px;
+}
 
 /* Layout Styles */
 /* ----------------------------------------------------------*/
