@@ -8,10 +8,10 @@ tags: swift, tdd, testing, xctest, xcode
 <div class="aside">
 <b>Note</b>
 <br />
-This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). If you'd prefer, you can watch that talk [not here because it's not uploaded yet](). This post is an edited form of my speaker notes from it.
+This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). I'll add a link to the talk once it's available. This post is an edited form of my speaker notes from it.
 </div>
 
-Today I want to ~talk~write about What's New In Testing for Swift 6.2/Xcode 26.
+Today I want to ~~talk~~ write about What's New In Testing for Swift 6.2/Xcode 26.
 
 First, I'll cover the new and upcoming things in Swift Testing. Then we'll move into XCTest and finally finishing with Automation Tests.
 
@@ -23,7 +23,7 @@ Before we talk about what did change, I'll start with what didn't change:
 
 Additionally, UI Automation tests still require you to use XCTest. Personally, this is less disappointing to me, but I do know some people are extremely excited about this.
 
-I expect both of these are extremely common requests that the testing team receives, so... here's hoping for next year! However, I need to disclaim this by saying that I am not an apple employee, I have no knowledge of their internal roadmap, and I respect my friends at Apple way too much to ever ask them to comment on things I know they can't comment about. Instead, I’ll just influence their higher ups by talking about the things they should be doing.
+I know that both of these are extremely common requests that the testing team receives, so... here's hoping for next year! However, I need to disclaim this by saying that I am not an apple employee, I have no knowledge of their internal roadmap, and I respect my friends at Apple way too much to ever ask them to comment on things I know they can't comment about. Instead, I’ll just influence their higher ups by talking about the things they should be doing.
 
 Enough about what didn't change, let's move on.
 
@@ -39,11 +39,11 @@ The Testing Workgroup core team currently consists of Brandon Williams, Brian Cr
 
 We meet every other Monday at 1 pm pacific time. If you're interested in attending, please send a message to [@testing-workgroup](https://forums.swift.org/new-message?groupname=testing-workgroup) on the Swift Forums.
 
-The Testing library follows the Evolution process - proposals are hosted in the Swift Evolution repository, but in a testing subdirectory of the proposals directory.
+The Testing library follows the Evolution process - proposals are hosted in the [Swift Evolution repository](https://github.com/swiftlang/swift-evolution), but in a [testing subdirectory](https://github.com/swiftlang/swift-evolution/tree/main/proposals/testing) of the proposals directory.
 
 ## What's New in Swift Testing
 
-Since Swift 6.0 was released last year, 6 proposals have been merged for Swift Testing:
+Between Swift 6.0 being released in September 2024 and June 12th, 2025 when I gave this talk, 6 new proposals were merged for Swift Testing:
 
 - Ranged Confirmations
 - Return errors from `#expect(throws:)`
@@ -173,7 +173,7 @@ struct MySharedBehavior: TestTrait, TestScoping {
 
 Note that `TestScoping` is a different protocol from `TestTrait` - your type conforming to `TestScoping` need not also conform to one of the Trait protocols. Though, there is an override doing the right thing in the extremely common case when your TestScoping type also conforms to `TestTrait`, which I took advantage of in the above code.
 
-Right now, there's not too much extra stuff you can do here. You don't have access to the contents of the `Suite`, nor do you have any access to the internals of the test. So it's rather limited compared to what it could be. The proposal mentions future directions expanding this, which are being actively discussed in the testing workgroup. I'm unsure when or if these'll land: this is really hard to get working with the type & concurrency system, plus the testing team is swamped with all their other priorities - like hopefully working with the SwiftUI team to support unit testing swiftui; look, I will single-handedly will this into existence.
+Right now, there's not too much extra stuff you can do here. You don't have access to the contents of the `Suite`, nor do you have any access to the internals of the test. So it's rather limited compared to what it could be. The proposal mentions future directions expanding this, which are being actively discussed in the testing workgroup. I'm unsure when or if these'll land: this is really hard to get working with the type & concurrency system, plus the testing team is swamped with all their other priorities - like hopefully working with the SwiftUI team to support unit testing swiftui; I will single-handedly will this into existence.
 
 #### Exit Tests
 
@@ -219,7 +219,7 @@ The way this works is fairly simple: It forks the test process, and runs the pas
 
 This also brings me to the primary downside of exit tests:
 
-They don't work on platforms that can't create and wait for subprocesses. Like that function just straight up won't compile if you try to build for iOS. So this means that it's currently limited to just macOS, Linux, FreeBSD, OpenBSD, and Windows. Supporting other platforms is something the Testing team is interested in, but wasn't included in the initial proposal because it would likely require a different approach. Which... fair. For iOS, the focus is on "never crashing the app", so I would expect iOS apps to actually throw an error or something instead of intentionally causing a crash.
+They don't work on platforms that can't create and wait for subprocesses. Like that function just straight up won't compile if you try to build for iOS. So this means that it's currently limited to just macOS, Linux, FreeBSD, OpenBSD, and Windows. Supporting other platforms is something the Testing team is interested in and wants to do, but it's not a thing now because it would likely require a different approach or for other platforms to specifically support this. Which is fair. For iOS, the focus is on "never crashing the app", so I would expect iOS apps to actually throw an error or something instead of intentionally causing a crash.
 
 #### Attachments
 
@@ -234,9 +234,9 @@ Now, you can attach data to Swift Testing tests. Currently these are:
 - `Data` (if Foundation is also imported)
 Anything conforming to both `Attachable` and either `Encodable` or `NSSecureCoding` (if Foundation is also imported)
 
-The story of how the "if Foundation is also imported" parenthetical works is fascinating: In brief, because Swift Testing is included in the Swift toolchain, it can't depend on any libraries that aren't in the Swift toolchain. And Foundation is not in the Swift toolchain. So, they use the not-fully-evolutioned "cross-import overlay" feature that was merged back in Swift 5.3 to interoperate with Foundation, without having a hard dependency on Foundation. Instead, there's basically a third module which is automatically imported when Swift Testing and Foundation are both imported. This third module is where the additional conformances for Data and Encodable/NSSecureCoding are found. I think this is great because it makes Attachments much more usable as a feature - being able to handle json or raw data is great.
+The story of how the "if Foundation is also imported" parenthetical works is fascinating: In brief, Foundation (at least the [open source Foundation](https://github.com/swiftlang/swift-foundation/tree/main). No idea about the existing closed-source one) is using Swift Testing for their own tests. Therefore, having Swift Testing depend on Foundation would introduce a circular dependency. Instead, they use the not-fully-evolutioned "cross-import overlay" feature that was merged back in Swift 5.3 to interoperate with Foundation, without having a hard dependency on Foundation. Instead, there's basically a third module which is automatically imported when Swift Testing and Foundation are both imported. This third module is where the additional conformances for Data and Encodable/NSSecureCoding are found. I think this is great because it makes Attachments much more usable as a feature - being able to handle json or raw data is great.
 
-Ok, so, actually using this is as simple as calling `Attachment.record()` with the data to attach:
+Actually using this is as simple as calling `Attachment.record()` with the data to attach:
 
 ```swift
 Attachment.record("Hello world!")
