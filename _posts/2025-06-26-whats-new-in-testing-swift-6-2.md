@@ -407,7 +407,7 @@ Moving on, there's also a new ui test recording & review experience in Xcode 26.
 
 The WWDC 2025 session [Record, Replay, and review: UI automation with Xcode](https://developer.apple.com/videos/play/wwdc2025/344) does a really good job of demoing this.
 
-I have mixed feelings on the code suggestion for fixing failing ui tests: That normalizes the idea that when a test goes red, it's the test's fault. When really you should consider a failing test to first be a problem in the production code. On the other hand, most teams/engineers don't practice test driven development, so I guess this is understandable, if unfortunate.
+I have mixed feelings on the code suggestion for fixing failing ui tests: That normalizes the idea that when a test goes red, it's the test's fault. When really you should consider a failing test to first be a problem in the production code. On the other hand, most teams/engineers don't practice test driven development or even test first development, so I guess this is understandable, if unfortunate.
 
 Still, this is a pretty neat new experience that's much better than what it was previously.
 
