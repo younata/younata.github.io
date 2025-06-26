@@ -1,7 +1,7 @@
 ---
 layout: post
 title: What's new in Testing, 2025 Edition
-date: 2025-06-13
+date: 2025-06-26
 tags: swift, tdd, testing, xctest, xcode
 ---
 
@@ -19,7 +19,7 @@ First, I'll cover the new and upcoming things in Swift Testing. Then we'll move 
 
 Before we talk about what did change, I'll start with what didn't change:
 
-6 years on, there is still no way to unit test code using SwiftUI. The official guidance remains use UI Automation Tests and SwiftUI Previews. Unsurprising, but extremely disappointing. I love that third party tools like [ViewInspector](https://github.com/nalexn/ViewInspector) exist - I even [gave a talk on using ViewInspector last year](https://blog.rachelbrindle.com/2025/06/12/testing-swiftui-and-swiftconcurrency/) - but I really wish I didn’t have to use them.
+6 years on, there is still no way to unit test code using SwiftUI. The official guidance remains use UI Automation Tests and SwiftUI Previews. Unsurprising, but extremely disappointing. I love that third party tools like [ViewInspector](https://github.com/nalexn/ViewInspector) exist - I even [gave a talk on using ViewInspector last year](https://rachelbrindle.com/2025/06/12/testing-swiftui-and-swiftconcurrency/) - but I really wish I didn’t have to use them.
 
 Additionally, UI Automation tests still require you to use XCTest. Personally, this is less disappointing to me, but I do know some people are extremely excited about this.
 
@@ -52,7 +52,7 @@ Between Swift 6.0 being released in September 2024 and June 12th, 2025 when I ga
 - Attachments
 - Evaluate in ConditionTrait
 
-The first 3 were included in Swift 6.1, releasing alongside xcode 16.3. The latter 3 are in Swift 6.2, and are currently included in the xcode 26.0 beta. Additionally, there are at least 3 pitches I'm aware of that are being actively discussed, which may or may not make it into the Swift 6.2 release.
+The first 3 were included in Swift 6.1, releasing alongside xcode 16.3. The latter 3 are in Swift 6.2, and are currently included in the xcode 26.0 beta. Additionally, there are at least 3 pitches I'm aware of that are being actively discussed, though I only expect one of them to make it into the Swift 6.2 release.
 
 Let's go over each of these, starting with Ranged Confirmations.
 
@@ -291,7 +291,7 @@ I'm going to cover these fairly quickly, as they're still in the pitch phase and
 
 [Pitch](https://github.com/suzannaratcliff/swift-evolution/blob/suzannaratcliff/issue-severity-warnings/proposals/testing/XXXX-issue-severity-warning.md). Pitch author: Suzy Ratcliff.
 
-Test Issue Warnings are basically ways to record & report test warnings. You'll see these, but they won't fail the test suite. These were also added to XCTest, so I'll cover them more later in this post. Assuming this gets adopted, you can use them by specifying an issue severity when you record it.
+Test Issue Warnings are ways to record & report issues that don't fail the test suite. These were also added to XCTest, so I'll cover them more later in this post. Assuming this gets adopted, you can use them by specifying an issue severity when you record it. This is the only active pitch I expect to make it into Swift 6.2, and I'll update this post if it does.
 
 ```swift
 Issue.record("Maybe ok?", severity: .warning)
@@ -316,6 +316,8 @@ I think these are going to be really useful, especially when combined with Test 
 }
 ```
 
+I don't expect Issue Handling Traits to make it into Swift 6.2.
+
 ### Polling Confirmations
 
 [Pitch](https://github.com/younata/swift-evolution/blob/younata/testing-polling-expectations/proposals/testing/NNNN-polling-confirmations.md). Pitch author: Rachel Brindle.
@@ -335,6 +337,8 @@ Polling Confirmations is the first part of extending the confirmation api to sup
     }
 }
 ```
+
+I don't expect Polling Confirmations to make it into Swift 6.2.
 
 ## What's New in XCTest
 
