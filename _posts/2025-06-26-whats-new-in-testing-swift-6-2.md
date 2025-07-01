@@ -6,6 +6,13 @@ tags: swift, tdd, testing, xctest, xcode
 ---
 
 <div class="aside">
+<b>Edit History</b>
+<br />
+2025-06-30: Added notes on the new Runtime Issue Detection feature in Xcode. Which I had completely missed when I first wrote the talk this was based on. Thanks to Suzy Ratcliff for asking that I include notes on this.<br />
+2025-06-30: Issue Handling Traits is now a proposal under active review. This happened prior to me publishing this post, though after the original talk was given.
+</div>
+
+<div class="aside">
 <b>Note</b>
 <br />
 This post is the contents of a talk I gave at [One More Thing 2025](https://omt-conf.com/). I'll add a link to the talk once it's available. This post is an edited form of my speaker notes from it.
@@ -275,7 +282,7 @@ public struct ConditionTrait: TestTrait, SuiteTrait {
 }
 ```
 
-### Current Promising Pitches
+### Current Promising Pitches & Proposals
 
 (This section will be updated as these pitches move through the Evolution process).
 
@@ -299,7 +306,7 @@ Issue.record("Maybe ok?", severity: .warning)
 
 #### Issue Handling Traits
 
-[Pitch](https://github.com/stmontgomery/swift-evolution/blob/issue-handling-trait/proposals/testing/NNNN-issue-handling-traits.md). Pitch author: Stuart Montgomery.
+[ST-0011 Proposal](https://github.com/swiftlang/swift-evolution/blob/main/proposals/testing/0011-issue-handling-traits.md). Proposal author: Stuart Montgomery.
 
 Issue Handling Traits are really powerful. As the name implies, these are traits that can be used to modify or filter issues before they’re reported - adding comments, adding attachments, normalizing non-deterministic inputs were just 3 of the examples named in the proposal.
 
@@ -316,7 +323,7 @@ I think these are going to be really useful, especially when combined with Test 
 }
 ```
 
-I don't expect Issue Handling Traits to make it into Swift 6.2.
+It seems like Issue Handling Traits may make it into Swift 6.2, but it's too early to tell at this point.
 
 ### Polling Confirmations
 
@@ -340,7 +347,9 @@ Polling Confirmations is the first part of extending the confirmation api to sup
 
 I don't expect Polling Confirmations to make it into Swift 6.2.
 
-## What's New in XCTest
+## What's New in XCTest & Testing in Xcode
+
+### Issue Warnings in XCTest
 
 There's not too much new in raw XCTest. The only change I'm aware of is support for reporting non-failing issues.
 
@@ -363,6 +372,16 @@ final class MyTestCase: XCTestCase {
     }
 }
 ```
+
+### Runtime Issue Detection in Xcode
+
+An additional change, which I had missed at first (Thanks to Suzy Ratcliff for reaching out and asking I include this!), is Runtime Issue Detection. This applies checks as surfaced by the Main Thread Checker, the Thread Performance Checker, or any other runtime issues reported by frameworks to tests, similar to if you click "run" in Xcode. By default, Runtime Issue Detection reports detected issues as warnings, the same as if you had used the new Issue Warnings feature in XCTest. You can disable these, or change them to report as test failures in the testplan editor in Xcode.
+
+Reporting runtime issues as warnings by default is incredibly kind and pragmatic. This is a new feature, and while they want it to be used, they also don't want existing passing tests to fail just because you upgraded Xcode. I think it's a really good, pragmatic choice to default this to report them as warnings. This not only mirrors the experience with Runtime Issues outside of test, but also frameworks do change over time, a codepath which previously did not raise a runtime issue could change to raise one later on just by updating to a new version of a framework. It's a very bad experience to suddenly have your tests fail because you updated your dependencies. So I understand why this defaults to reporting these as warnings. I plan on changing this to cause test failures as soon as I can.
+
+One thing I would like to have the ability to do is to configure how Runtime Issue are reported for a specific test. I can see wanting to leave this set to warning, except for specific tests which check that a runtime issue has been resolved. For those tests, you would want runtime issues (or at least, the specific runtime issue the test is checking) to cause test failures. Perhaps this will be something you can do with Issue Handling Traits in Swift Testing, though I'd also like to see an option to do the same in XCTest (feel free to duplicate [FB18523387](https://openradar.appspot.com/FB18523387)).
+
+This is huge for helping narrow down and stopping these runtime issues from occurring. It's one thing to see these raised as you navigate the app - especially if they're only triggered in a handful of codepaths that you rarely manually check. It's another to have these consistently generating warnings or even test failures. I am very much looking forward to making full use of this.
 
 ## What's New In Automation Tests
 
