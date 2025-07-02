@@ -8,6 +8,7 @@ tags: swift, tdd, testing, xctest, xcode
 <div class="aside">
 <b>Edit History</b>
 <br />
+2025-07-02: Removed request for ability to modify issues in XCTest before recording, as this can be done by overriding `XCTestCase.record(_:)`. This was a mentioned as an idea for how to handle runtime issues for keeping the default behavior, and allowing for dedicated tests to ensure that specific runtime issues have been resolved. Thanks to Stuart Montgomery for pointing this out.<br />
 2025-06-30: Added notes on the new Runtime Issue Detection feature in Xcode. Which I had completely missed when I first wrote the talk this was based on. Thanks to Suzy Ratcliff for asking that I include notes on this.<br />
 2025-06-30: Issue Handling Traits is now a proposal under active review. This happened prior to me publishing this post, though after the original talk was given.
 </div>
@@ -379,7 +380,7 @@ An additional change, which I had missed at first (Thanks to Suzy Ratcliff for r
 
 Reporting runtime issues as warnings by default is incredibly kind and pragmatic. This is a new feature, and while they want it to be used, they also don't want existing passing tests to fail just because you upgraded Xcode. I think it's a really good, pragmatic choice to default this to report them as warnings. This not only mirrors the experience with Runtime Issues outside of test, but also frameworks do change over time, a codepath which previously did not raise a runtime issue could change to raise one later on just by updating to a new version of a framework. It's a very bad experience to suddenly have your tests fail because you updated your dependencies. So I understand why this defaults to reporting these as warnings. I plan on changing this to cause test failures as soon as I can.
 
-One thing I would like to have the ability to do is to configure how Runtime Issue are reported for a specific test. I can see wanting to leave this set to warning, except for specific tests which check that a runtime issue has been resolved. For those tests, you would want runtime issues (or at least, the specific runtime issue the test is checking) to cause test failures. Perhaps this will be something you can do with Issue Handling Traits in Swift Testing, though I'd also like to see an option to do the same in XCTest (feel free to duplicate [FB18523387](https://openradar.appspot.com/FB18523387)).
+Another approach is to leave runtime issues as warnings, and set them to error for specific tests that verify the runtime issue has been resolved. For those tests, you can use either Issue Handling Traits in Swift Testing, or override [`XCTestCase.record(_:)`](https://developer.apple.com/documentation/xctest/xctestcase/record(_:)) to convert these to errors at runtime.
 
 This is huge for helping narrow down and stopping these runtime issues from occurring. It's one thing to see these raised as you navigate the app - especially if they're only triggered in a handful of codepaths that you rarely manually check. It's another to have these consistently generating warnings or even test failures. I am very much looking forward to making full use of this.
 
